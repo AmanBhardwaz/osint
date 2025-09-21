@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSINT Pro | Advanced Digital Forensics & Image Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link rel="icon" type="image/png" href="https://img.icons8.com/color/96/000000/detective.png">
+    
+    <style>
+        :root {
+            --bg-color: #0a0e14;
+            --card-bg: #161b22;
+            --card-hover: #1f2937;
+            --border-color: #2d3748;
+            --text-color: #e2e8f0;
+            --text-muted: #94a3b8;
+            --primary-color: #60a5fa;
+            --primary-hover: #3b82f6;
+            --secondary-color: #7dd3fc;
+            --accent-color: #f472b6;
+            --success-color: #34d399;
+            --warning-color: #fbbf24;
+            --danger-color: #f87171;
+            --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            --gradient-primary-hover: linear-gradient(135deg, var(--primary-hover), #ec4899);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.8;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+        
+        ::selection {
+            background: var(--primary-color);
+            color: #fff;
+        }
+        
+        .text-gradient {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .navbar {
+            background: rgba(10, 14, 20, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 1rem 0;
+            transition: var(--transition);
+        }
+        
+        .navbar.scrolled {
+            padding: 0.5rem 0;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .navbar-brand {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 1.75rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .navbar-brand i {
+            font-size: 1.8rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            color: var(--text-color) !important;
+            padding: 0.5rem 1rem !important;
+            margin: 0 0.25rem;
+            border-radius: 0.5rem;
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--gradient-primary);
+            transition: var(--transition);
+            border-radius: 2px;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: var(--primary-color) !important;
+        }
+        
+        .nav-link:hover::after, .nav-link.active::after {
+            width: 60%;
+        }
+
+        .hero-section {
+            background: radial-gradient(ellipse at bottom, #0f172a 0%, #0a0e14 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 6rem 2rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-.895 3-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%233b82f6' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.5;
+            z-index: 0;
+        }
+        .floating {
+            animation: floating 6s ease-in-out infinite;
+        }
+        
+        .floating-2 {
+            animation: floating 8s ease-in-out infinite;
+            animation-delay: 1s;
+        }
+        
+        .floating-3 {
+            animation: floating 10s ease-in-out infinite;
+            animation-delay: 0.5s;
+        }
+        
+        @keyframes floating {
+            0% { transform: translate(0, 0px); }
+            50% { transform: translate(0, 15px); }
+            100% { transform: translate(0, -0px); }
+        }
+        
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .gradient-text {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .hero-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 3.5rem;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.7;
+        }
+        
+        .hero-badge {
+            display: inline-block;
+            background: rgba(96, 165, 250, 0.15);
+            color: var(--primary-color);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(96, 165, 250, 0.2);
+            backdrop-filter: blur(5px);
+        }
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(96, 165, 250, 0.1), rgba(244, 114, 182, 0.1));
+            opacity: 0;
+            transition: var(--transition);
+            z-index: -1;
+        }
+        
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+            border-color: rgba(96, 165, 250, 0.3);
+        }
+        
+        .card:hover::before {
+            opacity: 1;
+        }
+        
+        .card-header {
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.25rem 1.5rem;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+        .btn {
+            font-weight: 600;
+            border-radius: 0.75rem;
+            padding: 0.75rem 2rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            border: none;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: var(--gradient-primary-hover);
+            transition: var(--transition);
+            z-index: -1;
+        }
+        
+        .btn:hover::before {
+            width: 100%;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-lg {
+            padding: 1rem 2.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .btn-icon {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-icon i {
+            font-size: 1.1em;
+        }
+        .section-heading {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-heading::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--gradient-primary);
+            border-radius: 2px;
+        }
+        
+        .section-subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto 3rem;
+        }
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1.25rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
+            transition: var(--transition);
+        }
+        
+        .feature-card {
+            min-height: 280px;
+            padding: 2rem 1.5rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: var(--transition);
+        }
+        
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.02);
+            border-color: rgba(96, 165, 250, 0.2);
+        }
+        
+        .feature-card:hover .feature-icon {
+            transform: translateY(-5px);
+        }
+        
+        .feature-card h5 {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            color: var(--text-color);
+        }
+        
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg fixed-top py-3">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-eye me-2"></i> OSINT Pro
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#hero">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Features</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#how-it-works">How it Works</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 mb-5 mb-lg-0" data-aos="fade-right" data-aos-delay="100">
+                    <span class="hero-badge d-inline-flex align-items-center">
+                        <i class="fas fa-shield-alt me-2"></i> Advanced Digital Forensics
+                    </span>
+                    <h1 class="hero-title display-4 fw-bold mb-4">
+                        Uncover the <span class="gradient-text">Truth</span> Behind Every Image
+                    </h1>
+                    <p class="hero-subtitle mb-5">
+                        Our advanced AI-powered platform helps you detect deepfakes, verify image authenticity, and gather intelligence with just a few clicks. Trust the experts in digital forensics.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="#upload-section" class="btn btn-primary btn-lg btn-icon">
+                            <i class="fas fa-upload"></i> Upload Image
+                        </a>
+                        <a href="#features" class="btn btn-outline-light btn-lg btn-icon">
+                            <i class="fas fa-play-circle"></i> Watch Demo
+                        </a>
+                    </div>
+                    
+                    <div class="d-flex align-items-center mt-5 pt-3">
+                        <div class="d-flex">
+                            <div class="avatar-group">
+                                <img src="https://randomuser.me/api/portraits/women/44.jpg" class="avatar" alt="User">
+                                <img src="https://randomuser.me/api/portraits/men/32.jpg" class="avatar" alt="User">
+                                <img src="https://randomuser.me/api/portraits/women/68.jpg" class="avatar" alt="User">
+                            </div>
+                        </div>
+                        <div class="ms-3">
+                            <div class="d-flex align-items-center">
+                                <div class="text-warning me-1">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                                <span class="text-muted">4.8/5.0</span>
+                            </div>
+                            <p class="small mb-0 text-muted">Trusted by 10,000+ professionals</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6" data-aos="fade-left" data-aos-delay="200">
+                    <div class="position-relative">
+                        <div class="card border-0 shadow-lg floating">
+                            <div class="card-body p-4">
+                                <h4 class="fw-bold mb-4">Start Your Analysis</h4>
+                                <form action="{{ url_for('upload_file') }}" method="post" enctype="multipart/form-data" class="dropzone" id="imageUploadForm">
+                                    <div class="mb-4 text-center">
+                                        <div class="upload-area" id="dropZone">
+                                            <i class="fas fa-cloud-upload-alt fa-3x mb-3 text-primary"></i>
+                                            <h5 class="mb-2">Drag & Drop Your Image</h5>
+                                            <p class="text-muted small mb-3">or click to browse files (JPG, PNG, WEBP)</p>
+                                            <input type="file" id="imageUpload" name="file" class="d-none" accept="image/*" required>
+                                            <label for="imageUpload" class="btn btn-outline-primary btn-sm">Select File</label>
+                                        </div>
+                                        <div id="fileInfo" class="mt-3 small text-muted"></div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-lg w-100 btn-icon">
+                                        <i class="fas fa-search me-2"></i> Analyze Image
+                                    </button>
+                                </form>
+                                <p class="small text-center text-muted mt-3 mb-0">
+                                    <i class="fas fa-lock me-1"></i> Your files are secure and will be deleted after analysis
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Floating Elements -->
+                        <div class="position-absolute" style="top: -20px; right: -20px; z-index: -1;">
+                            <div class="bg-primary bg-opacity-10 rounded-circle" style="width: 120px; height: 120px;"></div>
+                        </div>
+                        <div class="position-absolute" style="bottom: -30px; left: -30px; z-index: -1;">
+                            <div class="bg-danger bg-opacity-10 rounded-circle" style="width: 150px; height: 150px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Upload Section -->
+    <section id="upload-section" class="py-5 bg-dark bg-opacity-50">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h2 class="section-heading" data-aos="fade-up">How It Works</h2>
+                    <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                        Our platform makes it easy to verify images and detect manipulations with just a few simple steps.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="row g-4 mt-4">
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card h-100 border-0 bg-transparent text-center">
+                        <div class="card-body p-4">
+                            <div class="icon-wrapper bg-primary bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 60px; height: 60px;">
+                                <i class="fas fa-upload fa-2x text-primary"></i>
+                            </div>
+                            <h4 class="h5 mb-3">1. Upload Image</h4>
+                            <p class="text-muted mb-0">Drag and drop your image or click to browse files from your device.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card h-100 border-0 bg-transparent text-center">
+                        <div class="card-body p-4">
+                            <div class="icon-wrapper bg-success bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 60px; height: 60px;">
+                                <i class="fas fa-search fa-2x text-success"></i>
+                            </div>
+                            <h4 class="h5 mb-3">2. Advanced Analysis</h4>
+                            <p class="text-muted mb-0">Our AI analyzes the image for manipulations, metadata, and more.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="card h-100 border-0 bg-transparent text-center">
+                        <div class="card-body p-4">
+                            <div class="icon-wrapper bg-warning bg-opacity-10 rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style="width: 60px; height: 60px;">
+                                <i class="fas fa-chart-bar fa-2x text-warning"></i>
+                            </div>
+                            <h4 class="h5 mb-3">3. Get Results</h4>
+                            <p class="text-muted mb-0">Receive a detailed report with insights about the image's authenticity.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-7 position-relative overflow-hidden">
+        <div class="container position-relative">
+            <div class="row justify-content-center mb-6">
+                <div class="col-lg-8 text-center">
+                    <span class="badge bg-primary bg-opacity-10 text-primary mb-3">Features</span>
+                    <h2 class="section-heading" data-aos="fade-up">Advanced <span class="gradient-text">Forensic Tools</span> for Professionals</h2>
+                    <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                        Our comprehensive suite of digital forensics tools helps you uncover the truth behind any image with precision and confidence.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-card card h-100">
+                        <div class="icon-wrapper bg-primary bg-opacity-10 rounded-3 p-3 d-inline-flex mb-4" style="width: 60px; height: 60px;">
+                            <i class="fas fa-search m-auto feature-icon"></i>
+                        </div>
+                        <h5>Reverse Image Search</h5>
+                        <p>Instantly find all online appearances of an image across the web with our powerful reverse image search technology.</p>
+                        <a href="#" class="btn btn-link text-decoration-none p-0 mt-auto align-self-start">
+                            Learn more <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="150">
+                    <div class="feature-card card h-100">
+                        <div class="icon-wrapper bg-success bg-opacity-10 rounded-3 p-3 d-inline-flex mb-4" style="width: 60px; height: 60px;">
+                            <i class="fas fa-camera m-auto feature-icon"></i>
+                        </div>
+                        <h5>Metadata Analysis</h5>
+                        <p>Extract and analyze EXIF, IPTC, and XMP metadata to uncover hidden details about an image's origin and history.</p>
+                        <a href="#" class="btn btn-link text-decoration-none p-0 mt-auto align-self-start">
+                            Learn more <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-card card h-100">
+                        <div class="icon-wrapper bg-danger bg-opacity-10 rounded-3 p-3 d-inline-flex mb-4" style="width: 60px; height: 60px;">
+                            <i class="fas fa-robot m-auto feature-icon"></i>
+                        </div>
+                        <h5>AI & Deepfake Detection</h5>
+                        <p>Identify AI-generated or manipulated content with our advanced deep learning algorithms designed to spot digital forgeries.</p>
+                        <a href="#" class="btn btn-link text-decoration-none p-0 mt-auto align-self-start">
+                            Learn more <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                    <div class="feature-card card h-100">
+                        <div class="icon-wrapper bg-warning bg-opacity-10 rounded-3 p-3 d-inline-flex mb-4" style="width: 60px; height: 60px;">
+                            <i class="fas fa-pen-alt m-auto feature-icon"></i>
+                        </div>
+                        <h5>Manipulation Detection</h5>
+                        <p>Reveal signs of photo manipulation with our advanced Error Level Analysis and cloning detection algorithms.</p>
+                        <a href="#" class="btn btn-link text-decoration-none p-0 mt-auto align-self-start">
+                            Learn more <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="150">
+                    <div class="feature-card card h-100">
+                        <div class="icon-wrapper bg-info bg-opacity-10 rounded-3 p-3 d-inline-flex mb-4" style="width: 60px; height: 60px;">
+                            <i class="fas fa-shield-alt m-auto feature-icon"></i>
+                        </div>
+                        <h5>Credibility Scoring</h5>
+                        <p>Get an instant credibility assessment with our proprietary scoring system that evaluates multiple trust factors.</p>
+                        <a href="#" class="btn btn-link text-decoration-none p-0 mt-auto align-self-start">
+                            Learn more <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                    <div class="feature-card card h-100">
+                        <div class="icon-wrapper bg-purple bg-opacity-10 rounded-3 p-3 d-inline-flex mb-4" style="width: 60px; height: 60px;">
+                            <i class="fas fa-file-alt m-auto feature-icon"></i>
+                        </div>
+                        <h5>Comprehensive Reports</h5>
+                        <p>Generate detailed, court-admissible reports with all the evidence you need to support your findings.</p>
+                        <a href="#" class="btn btn-link text-decoration-none p-0 mt-auto align-self-start">
+                            Learn more <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-6" data-aos="fade-up">
+                <a href="#" class="btn btn-outline-primary btn-lg px-5">
+                    <i class="fas fa-eye me-2"></i> View All Features
+                </a>
+            </div>
+        </div>
+        
+        <!-- Background Elements -->
+        <div class="position-absolute top-0 end-0 w-50 h-100 bg-gradient-primary opacity-5 rounded-circle" style="z-index: -1; filter: blur(100px);"></div>
+        <div class="position-absolute bottom-0 start-0 w-50 h-50 bg-gradient-danger opacity-5 rounded-circle" style="z-index: -1; filter: blur(100px);"></div>
+    </section>
+    
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-7 bg-dark bg-opacity-50 position-relative">
+        <div class="container position-relative">
+            <div class="row justify-content-center mb-6">
+                <div class="col-lg-8 text-center">
+                    <span class="badge bg-primary bg-opacity-10 text-primary mb-3">Process</span>
+                    <h2 class="section-heading" data-aos="fade-up">How It <span class="gradient-text">Works</span></h2>
+                    <p class="section-subtitle" data-aos="fade-up" data-aos-delay="100">
+                        Our advanced image analysis process is designed to be simple, fast, and incredibly powerful.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="row g-4 g-lg-5 align-items-center">
+                <div class="col-lg-6" data-aos="fade-right">
+                    <div class="card border-0 bg-transparent">
+                        <div class="card-body p-4">
+                            <div class="d-flex mb-5" data-aos="fade-up" data-aos-delay="100">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                        <span class="h4 mb-0 fw-bold">1</span>
+                                    </div>
+                                </div>
+                                <div class="ms-4">
+                                    <h4 class="h5 mb-2">Upload Your Image</h4>
+                                    <p class="text-muted mb-0">Simply drag and drop your image file or click to browse. We support JPG, PNG, and WebP formats up to 20MB.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex mb-5" data-aos="fade-up" data-aos-delay="200">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                        <span class="h4 mb-0 fw-bold">2</span>
+                                    </div>
+                                </div>
+                                <div class="ms-4">
+                                    <h4 class="h5 mb-2">Advanced Analysis</h4>
+                                    <p class="text-muted mb-0">Our AI-powered system performs multiple forensic analyses simultaneously to examine every aspect of your image.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex" data-aos="fade-up" data-aos-delay="300">
+                                <div class="flex-shrink-0">
+                                    <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                                        <span class="h4 mb-0 fw-bold">3</span>
+                                    </div>
+                                </div>
+                                <div class="ms-4">
+                                    <h4 class="h5 mb-2">Get Detailed Results</h4>
+                                    <p class="text-muted mb-0">Receive a comprehensive report with all findings, including potential manipulations, metadata, and source information.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6" data-aos="fade-left" data-aos-delay="200">
+                    <div class="position-relative">
+                        <div class="position-relative z-2">
+                            <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80" alt="Image Analysis" class="img-fluid rounded-4 shadow-lg">
+                        </div>
+                        
+                        <!-- Floating Elements -->
+                        <div class="position-absolute top-0 start-0 translate-middle" style="z-index: 1;">
+                            <div class="bg-primary bg-opacity-10 rounded-circle" style="width: 120px; height: 120px;"></div>
+                        </div>
+                        
+                        <div class="position-absolute bottom-0 end-0 translate-middle" style="z-index: 1;">
+                            <div class="bg-danger bg-opacity-10 rounded-circle" style="width: 150px; height: 150px;"></div>
+                        </div>
+                        
+                        <!-- Stats Card -->
+                        <div class="position-absolute bottom-0 start-0 translate-middle-y ms-n4" style="z-index: 3;" data-aos="fade-up" data-aos-delay="400">
+                            <div class="card bg-primary text-white border-0 shadow-lg" style="width: 200px;">
+                                <div class="card-body p-3 text-center">
+                                    <div class="d-flex align-items-center justify-content-center mb-2">
+                                        <i class="fas fa-bolt me-2"></i>
+                                        <h5 class="mb-0">Fast Analysis</h5>
+                                    </div>
+                                    <p class="small mb-0">Results in under 30 seconds</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Background Elements -->
+        <div class="position-absolute top-0 end-0 w-50 h-100 bg-gradient-primary opacity-5 rounded-circle" style="z-index: -1; filter: blur(100px);"></div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark bg-opacity-50 pt-6 pb-4">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 mb-4 mb-lg-0">
+                    <a class="navbar-brand mb-3" href="#">
+                        <i class="fas fa-eye me-2"></i> OSINT Pro
+                    </a>
+                    <p class="text-muted mb-4">Advanced digital forensics and image analysis platform for professionals who demand the truth.</p>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-muted hover-primary"><i class="fab fa-twitter fa-lg"></i></a>
+                        <a href="#" class="text-muted hover-primary"><i class="fab fa-github fa-lg"></i></a>
+                        <a href="#" class="text-muted hover-primary"><i class="fab fa-linkedin-in fa-lg"></i></a>
+                        <a href="#" class="text-muted hover-primary"><i class="fab fa-youtube fa-lg"></i></a>
+                    </div>
+                </div>
+                
+                <div class="col-6 col-md-4 col-lg-2">
+                    <h5 class="h6 mb-3 text-uppercase">Product</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-primary">Features</a></li>
+                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-primary">Pricing</a></li>
+                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-primary">API</a></li>
+                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-primary">Integrations</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-6 col-md-4 col-lg-2">
+                    <h5 class="h6 mb-3 text-uppercase">Resources</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-primary">Documentation</a></li>
+                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-primary">Tutorials</a></li>
+                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-primary">Blog</a></li>
+                        <li class="mb-2"><a href="#" class="text-muted text-decoration-none hover-primary">Support</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-md-4 col-lg-3">
+                    <h5 class="h6 mb-3 text-uppercase">Newsletter</h5>
+                    <p class="small text-muted">Subscribe to our newsletter for the latest updates and news.</p>
+                    <form class="mb-3">
+                        <div class="input-group">
+                            <input type="email" class="form-control bg-dark border-secondary text-white" placeholder="Your email" aria-label="Your email" required>
+                            <button class="btn btn-primary" type="submit"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </form>
+                    <p class="small text-muted mb-0">We'll never share your email with anyone else.</p>
+                </div>
+            </div>
+            
+            <hr class="my-4 border-secondary">
+            
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
+                    <p class="mb-0 text-muted small">&copy; 2024 OSINT Pro. All rights reserved.</p>
+                </div>
+                <div class="col-md-6 text-center text-md-end">
+                    <ul class="list-inline mb-0">
+                        <li class="list-inline-item"><a href="#" class="text-muted text-decoration-none small hover-primary">Privacy Policy</a></li>
+                        <li class="list-inline-item mx-2">•</li>
+                        <li class="list-inline-item"><a href="#" class="text-muted text-decoration-none small hover-primary">Terms of Service</a></li>
+                        <li class="list-inline-item mx-2">•</li>
+                        <li class="list-inline-item"><a href="#" class="text-muted text-decoration-none small hover-primary">Cookies</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <a href="#" class="btn btn-primary btn-icon rounded-circle position-fixed bottom-4 end-4 d-flex align-items-center justify-content-center" id="back-to-top" style="width: 50px; height: 50px; z-index: 99; display: none !important;">
+        <i class="fas fa-arrow-up"></i>
+    </a>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        // Initialize AOS (Animate On Scroll)
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true,
+            mirror: false
+        });
+        
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+            
+            // Show/hide back to top button
+            const backToTop = document.getElementById('back-to-top');
+            if (window.scrollY > 300) {
+                backToTop.style.display = 'flex';
+            } else {
+                backToTop.style.display = 'none';
+            }
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    window.scrollTo({
+                        top: target.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // File upload preview
+        const fileInput = document.getElementById('imageUpload');
+        const dropZone = document.getElementById('dropZone');
+        const fileInfo = document.getElementById('fileInfo');
+        
+        if (fileInput && dropZone) {
+            // Handle drag and drop
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, unhighlight, false);
+            });
+            
+            function highlight() {
+                dropZone.classList.add('border-primary', 'border-2');
+            }
+            
+            function unhighlight() {
+                dropZone.classList.remove('border-primary', 'border-2');
+            }
+            
+            // Handle dropped files
+            dropZone.addEventListener('drop', handleDrop, false);
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                handleFiles(files);
+            }
+            
+            // Handle file selection via click
+            dropZone.addEventListener('click', () => {
+                fileInput.click();
+            });
+            
+            fileInput.addEventListener('change', function() {
+                handleFiles(this.files);
+            });
+            
+            function handleFiles(files) {
+                if (files.length > 0) {
+                    const file = files[0];
+                    if (file.type.startsWith('image/')) {
+                        fileInfo.innerHTML = `
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            ${file.name} (${formatFileSize(file.size)})
+                        `;
+                    } else {
+                        fileInfo.innerHTML = `
+                            <i class="fas fa-times-circle text-danger me-2"></i>
+                            Please upload a valid image file
+                        `;
+                        fileInput.value = '';
+                    }
+                }
+            }
+            
+            function formatFileSize(bytes) {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            }
+        }
+    </script>
+</body>
+</html>

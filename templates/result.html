@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSINT Report | Digital Image Forensics & Analysis</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link rel="icon" type="image/png" href="https://img.icons8.com/color/96/000000/detective.png">
+    <style>
+        :root {
+            --bg-color: #0a0e14;
+            --card-bg: #161b22;
+            --card-hover: #1f2937;
+            --border-color: #2d3748;
+            --text-color: #e2e8f0;
+            --text-muted: #94a3b8;
+            --primary-color: #60a5fa;
+            --primary-hover: #3b82f6;
+            --secondary-color: #7dd3fc;
+            --accent-color: #f472b6;
+            --success-color: #34d399;
+            --warning-color: #fbbf24;
+            --danger-color: #f87171;
+            --gradient-primary: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            --gradient-primary-hover: linear-gradient(135deg, var(--primary-hover), #ec4899);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.8;
+            overflow-x: hidden;
+        }
+        
+        ::selection {
+            background: var(--primary-color);
+            color: #fff;
+        }
+        
+        .gradient-text {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: inline-block;
+        }
+        
+        .container {
+            max-width: 900px;
+        }
+        .card {
+            background-color: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+        }
+        .section-title {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+            color: #58a6ff;
+            margin-bottom: 2rem;
+        }
+        .text-section pre {
+            background-color: #0d1117;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            padding: 1rem;
+            border-radius: 8px;
+            white-space: pre-wrap;
+        }
+        .alert-info {
+            background-color: #1a324a;
+            border-color: #2e5978;
+            color: #89cff0;
+        }
+        .alert-danger {
+            background-color: #3b2c2c;
+            border-color: #5d3636;
+            color: #ff9999;
+        }
+        .alert-success {
+            background-color: #2b3a2b;
+            border-color: #365d36;
+            color: #99ff99;
+        }
+        .takedown-request {
+            background-color: #1e1e1e !important;
+            border: 1px dashed #666;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-5">
+        <header class="text-center mb-5">
+            <h1 class="display-4 fw-bold">🔍 OSINT Report</h1>
+            <p class="lead text-secondary">Digital Image Forensics and Verification</p>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary mt-3 px-4">Upload Another Image</a>
+        </header>
+
+        <main>
+            <div class="row mb-5 justify-content-center">
+                <div class="col-md-10">
+                    <div class="card p-4 text-center">
+                        <img src="{{ url_for('static', filename='uploads/' + uploaded_image) }}" class="img-fluid rounded mb-3" alt="Uploaded Image">
+                        <h4 class="fw-bold">Report Summary</h4>
+                        <p class="text-muted">A quick overview of the findings for your image.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-5 g-4 justify-content-center">
+                <div class="col-md-6">
+                    <div class="card p-4">
+                        <h5 class="fw-bold section-title">📷 EXIF Metadata</h5>
+                        {% if exif_data %}
+                        <table class="table table-dark table-striped mt-3">
+                            <tbody>
+                                {% for key, value in exif_data.items() %}
+                                <tr>
+                                    <td>{{ key }}</td>
+                                    <td>{{ value }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <p>No EXIF metadata found.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card p-4">
+                        <h5 class="fw-bold section-title">📄 OCR Text</h5>
+                        <div class="text-section">
+                            <pre>{{ ocr_text }}</pre>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card p-4">
+                        <h5 class="fw-bold section-title">⭐ Credibility Score</h5>
+                        <div class="alert alert-info mt-3">
+                            <h4 class="alert-heading">{{ "%.2f"|format(credibility_score) }}% Credibility Score</h4>
+                            <p>Found on {{ verified_count }} verified source(s) out of {{ reverse_search_results|length }} results.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card p-4">
+                        <h5 class="fw-bold section-title">🔬 Manipulation Detection</h5>
+                        {% if ela_image %}
+                        <p class="card-text text-muted">Suspicious regions appear brighter, which may indicate manipulation.</p>
+                        <img src="{{ url_for('static', filename='uploads/' + ela_image) }}" class="img-fluid rounded mt-3" alt="ELA Analysis">
+                        {% else %}
+                        <p>Could not perform ELA on this image.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-5 g-4 justify-content-center">
+                <div class="col-md-12">
+                    <div class="card p-4">
+                        <h5 class="fw-bold section-title">🚨 Suspicious Content Alert</h5>
+                        {% if is_suspicious %}
+                            <div class="alert alert-danger">
+                                <h4 class="alert-heading">⚠️ Warning! Highly Suspicious Content</h4>
+                                <p>This image is flagged as **highly suspicious** and may be a deepfake or AI-generated content.</p>
+                            </div>
+                            <h6 class="mt-4 fw-bold">🛡️ Victim Protection Layer</h6>
+                            <p class="text-muted">Generate a takedown request to send to the platform.</p>
+                            <div class="takedown-request p-3 rounded mt-3">
+                                <strong>Subject:</strong> {{ takedown_request.subject }}
+                                <hr class="my-2" style="border-color: #555;">
+                                <pre style="white-space: pre-wrap;">{{ takedown_request.body }}</pre>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-success">
+                                <h4 class="alert-heading">✅ No Suspicious Content Detected</h4>
+                                <p>This image does not appear to be an obvious deepfake or AI-generated content.</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mb-5 g-4 justify-content-center">
+                <div class="col-md-12">
+                    <div class="card p-4">
+                        <h5 class="fw-bold section-title">🌐 Reverse Search Results</h5>
+                        {% if reverse_search_results %}
+                        <ul class="list-group list-group-flush mt-3">
+                            {% for result in reverse_search_results %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <a href="{{ result.url }}" target="_blank" class="text-info text-decoration-none fw-semibold">{{ result.title }}</a>
+                                <small class="text-muted">{{ result.url }}</small>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% else %}
+                        <p>No reverse search results found.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            {% if report_file %}
+            <div class="row mt-5 justify-content-center">
+                <div class="col-md-10 text-center">
+                    <a href="{{ url_for('download_report', filename=report_file) }}" class="btn btn-success btn-lg px-5">
+                        <i class="fas fa-download me-2"></i> Download Full Verification Report
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </main>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

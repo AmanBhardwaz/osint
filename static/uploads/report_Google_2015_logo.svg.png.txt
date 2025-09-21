@@ -1,0 +1,16 @@
+--- Image Verification Report ---
+
+Suspicious Content Detected: No
+
+1. Image Metadata (EXIF)
+  - No EXIF data found.
+
+2. OCR Text
+  - Google
+
+
+3. Credibility Score: 0.00%
+  - Found on 0 verified source(s).
+
+4. Reverse Search Results (0 found)
+  - No reverse search results found.

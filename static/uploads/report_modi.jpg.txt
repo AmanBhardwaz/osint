@@ -1,0 +1,20 @@
+--- Image Verification Report ---
+
+Suspicious Content Detected: No
+
+1. Image Metadata (EXIF)
+  - 33432: Artur Widak/NurPhoto
+  - 282: 300.0
+  - 283: 300.0
+  - 270: WARSAW, POLAND - AUGUST 22, 2024:
+Indian Prime Minister Narendra Modi speaks during a joined press conference with Polish Prime Minister Donal Tusk at the Polish Prime Minister's Office in Warsaw, on August 22, 2024, in Warsaw, Poland.
+India's Prime Minister Narendra Modi began his historic trip to Poland and Ukraine, pledging to advocate for a peaceful resolution to Russia's invasion of Ukraine. Poland is the first leg of his trip, where he meets with both the Polish Prime Minister and President. (Photo by Artur Widak/NurPhoto via Getty Images)
+
+2. OCR Text
+  - 
+
+3. Credibility Score: 0.00%
+  - Found on 0 verified source(s).
+
+4. Reverse Search Results (0 found)
+  - No reverse search results found.
